@@ -100,7 +100,7 @@ def gconnect():
         # contains access token and other information.
         # Function step2_exchange does step 4 and 5. 
         credentials = oauth_flow.step2_exchange(authorization_code)
-        print (credentials.client_id)
+        print(credentials.client_id)
     except FlowExchangeError:
         response = make_response(json.dumps('Failed to upgrade the authorization code'), 401)
         response.headers['Content-Type'] = 'application/json'
@@ -139,7 +139,7 @@ def gconnect():
     if result['aud'] != CLIENT_ID:
         response = make_response(
             json.dumps("Token's client ID does not match app's."), 401)
-        print "Token's client ID does not match app's."
+        print("Token's client ID does not match app's.")
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -153,7 +153,7 @@ def gconnect():
     answer = requests.get(userinfo_url, params=params)
 
     data = answer.json()
-    print data
+    print(data)
     
     # store username, email in login_session
     login_session['username'] = data['name']
@@ -162,7 +162,7 @@ def gconnect():
     # check if this user has logged in before 
     # and retrieve user's user_id that is stored in user table
     user_id = getUserID(login_session['email'])
-    print user_id
+    print(user_id)
 
     # if user_id is not found in user table, then create an entry for this user in user table
     # in database
@@ -178,20 +178,20 @@ def gconnect():
 def gdisconnect():
     access_token = login_session.get('access_token')
     if access_token is None:
-        print 'Access Token is None'
+        print('Access Token is None')
         response = make_response(json.dumps('Current user not connected.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
 
-    print 'In gdisconnect access token is %s', access_token
-    print 'User email is: '
-    print login_session['email']
+    print('In gdisconnect access token is %s', access_token)
+    print('User email is: ')
+    print(login_session['email'])
 
     url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
     h = httplib2.Http()
     (result, content) = h.request(url, 'GET')
-    print 'result is '
-    print result
+    print('result is ')
+    print(result)
     if result['status'] == '200':
         del login_session['access_token']
         del login_session['email']
@@ -206,7 +206,7 @@ def gdisconnect():
 @app.route('/')
 def index():
     projects = session.query(Project).all()
-    print projects
+    print(projects)
     if 'email' not in login_session:
         return render_template('publicindex.html', projects=projects)
     return render_template('index.html',
@@ -388,4 +388,4 @@ def delete_task(project_name, task_name):
 if __name__ == "__main__":
     app.secret_key = 'super_secret_key'
     app.debug = True
-    app.run(host='0.0.0.0', port=8080)
+    app.run(host='127.0.0.1', port=8080)
